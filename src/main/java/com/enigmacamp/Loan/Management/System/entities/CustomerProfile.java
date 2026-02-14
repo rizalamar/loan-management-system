@@ -28,7 +28,7 @@ public class CustomerProfile {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @Column(nullable = false, precision = 15, scale = 2) // Max 15 digit total, 2 digit desimal (contoh: 9999999999999.99)
     private BigDecimal monthlyIncome;
 
     // Path untuk file KTP
@@ -45,5 +45,4 @@ public class CustomerProfile {
 
     @UpdateTimestamp
     private LocalDateTime updateAt;
-
 }
