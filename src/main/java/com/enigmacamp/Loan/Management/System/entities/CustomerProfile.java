@@ -26,6 +26,9 @@ public class CustomerProfile {
     private User user;
 
     @Column(nullable = false, unique = true, length = 100)
+    private String name;
+
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
     @Column(nullable = false, precision = 15, scale = 2) // Max 15 digit total, 2 digit desimal (contoh: 9999999999999.99)

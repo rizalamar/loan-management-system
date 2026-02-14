@@ -17,6 +17,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    // dipanggil saat login
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Find user dari database
@@ -27,7 +28,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
         // Convert entity User ke Spring Security User Details
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
-                .password(user.getPassword())
+                .password(user.getPassword()) // password sudah encode
+                // Role user (Customer atau Admin)
                 .authorities(Collections.singletonList(
                         new SimpleGrantedAuthority(user.getRole().name())
                 ))
