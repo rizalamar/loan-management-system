@@ -57,7 +57,7 @@ public class LoanController {
         );
     }
 
-    @GetMapping("/api/my-loans/{id}")
+    @GetMapping("/my-loans/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<LoanResponse>> getMyLoanById(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -119,6 +119,8 @@ public class LoanController {
         );
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommonResponse<Void>> deleteLoan(@PathVariable UUID id){
         loanService.deleteLoan(id);
         return ResponseEntity.ok(

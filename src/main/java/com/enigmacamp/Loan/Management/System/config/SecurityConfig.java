@@ -37,7 +37,7 @@ public class SecurityConfig {
                             // Admin-only endpoints
                             .requestMatchers("/api/admin/**").hasRole("ADMIN")
                             // Customer endpoints
-                            .requestMatchers("/api/customer/**").hasRole("Customer")
+                            .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                             .requestMatchers("/api/loans/**").hasAnyRole("CUSTOMER", "ADMIN")
                             // Semua Request lainnya butuh authentication
                             .anyRequest().authenticated()

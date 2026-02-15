@@ -13,7 +13,7 @@ public record LoanRequest(
         @NotNull(message = "Tenor is required")
         @Min(value = 6, message = "Minimum loan tenor is 6 months")
         @Max(value = 360, message = "Maximum load tenor is 360 months")
-        Integer tenorMonth,
+        Integer tenorMonths,
 
         @NotNull(message = "Interest rate is required")
         @DecimalMin(value = "0.1", message = "Minimum interest rate is 0.1%")

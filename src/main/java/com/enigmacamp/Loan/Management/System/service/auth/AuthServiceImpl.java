@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         // 3. Create User entity
         User user = User.builder()
                 .username(request.username())
-                .password(request.password())
+                .password(passwordEncoder.encode(request.password()))
                 .role(User.Role.ROLE_CUSTOMER)
                 .build();
         // 4. save the user

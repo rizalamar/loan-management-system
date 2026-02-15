@@ -49,13 +49,13 @@ public class LoanServiceImpl implements LoanService {
         Loan loan = Loan.builder()
                 .customer(customer)
                 .amount(request.amount())
-                .tenorMonths(request.tenorMonth())
+                .tenorMonths(request.tenorMonths())
                 .interestRate(request.interestRate())
                 .status(Loan.LoanStatus.PENDING)
                 .build();
 
         // 5. Save loan
-        Loan savedLoan = loanRepository.save(loan);
+        Loan savedLoan = loanRepository.saveAndFlush(loan);
 
         // 6. Return response
         return mapToResponse(savedLoan);

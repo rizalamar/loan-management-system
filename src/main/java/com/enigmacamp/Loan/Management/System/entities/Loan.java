@@ -47,7 +47,7 @@ public class Loan {
 
     public enum LoanStatus {
         PENDING,
-        APPROVE,
+        APPROVED,
         REJECTED
     }
 }
