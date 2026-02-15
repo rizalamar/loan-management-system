@@ -6,11 +6,15 @@ import com.enigmacamp.Loan.Management.System.dto.response.LoanResponse;
 import com.enigmacamp.Loan.Management.System.entities.CustomerProfile;
 import com.enigmacamp.Loan.Management.System.entities.Loan;
 import com.enigmacamp.Loan.Management.System.entities.User;
+import com.enigmacamp.Loan.Management.System.exception.BadRequestException;
+import com.enigmacamp.Loan.Management.System.exception.ResourceNotFoundException;
+import com.enigmacamp.Loan.Management.System.exception.UnauthorizedException;
 import com.enigmacamp.Loan.Management.System.repository.CustomerProfileRepository;
 import com.enigmacamp.Loan.Management.System.repository.LoanRepository;
 import com.enigmacamp.Loan.Management.System.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.ResourceClosedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,15 +34,15 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponse applyLoan(String username, LoanRequest request) {
         // 1. Find user by username
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 2. Find customer profile
         CustomerProfile customer = customerProfileRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer profile not found"));
 
         // 3. Business validation: Check if customer has uploaded document
         if(customer.getKtpPath() == null || customer.getSalarySlipPath() == null){
-            throw new RuntimeException("Please upload KTP and Salary Slip before applying for loan");
+            throw new BadRequestException("Please upload KTP and Salary Slip before applying for loan");
         }
 
         // 4. Create Loan entity
@@ -61,11 +65,11 @@ public class LoanServiceImpl implements LoanService {
     public List<LoanResponse> getMyLoans(String username) {
         // 1. Find user by username
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 2. Find customer profile
         CustomerProfile customer = customerProfileRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer profile not found"));
 
         // 3. Get all loans for this customer
         List<Loan> myLoans = loanRepository.findByCustomer(customer);
@@ -78,19 +82,19 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponse getMyLoanById(String username, UUID loanId) {
         // 1. Find user by username
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 2. Find customer profile
         CustomerProfile customer = customerProfileRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer profile not found"));
 
         // 3. Find loan
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Loan not found"));
 
         // 4. Security check: loan harus milik customer ini
         if(!loan.getCustomer().getId().equals(customer.getId())){
-            throw new RuntimeException("You don't have permission to view this loan");
+            throw new UnauthorizedException("You don't have permission to view this loan");
         }
 
         // 5. Return response
@@ -118,7 +122,7 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponse updateLoanStatus(UUID loanId, LoanStatusUpdateRequest request) {
         // 1. Find Loan
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new RuntimeException("Loan not found"));
+                .orElseThrow(() -> new ResourceClosedException("Loan not found")]);
 
         // 2. Business validation: tidak boleh update loan yang approved atau rejected
         if(loan.getStatus() != Loan.LoanStatus.PENDING){
@@ -137,7 +141,7 @@ public class LoanServiceImpl implements LoanService {
     @Transactional
     public void deleteLoan(UUID loanId) {
         if(!loanRepository.existsById(loanId)){
-            throw new RuntimeException("Loan not found");
+            throw new ResourceNotFoundException("Loan not found");
         }
 
         loanRepository.deleteById(loanId);

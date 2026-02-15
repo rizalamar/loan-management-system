@@ -4,9 +4,12 @@ import com.enigmacamp.Loan.Management.System.dto.request.CustomerProfileUpdateRe
 import com.enigmacamp.Loan.Management.System.dto.response.CustomerProfileResponse;
 import com.enigmacamp.Loan.Management.System.entities.CustomerProfile;
 import com.enigmacamp.Loan.Management.System.entities.User;
+import com.enigmacamp.Loan.Management.System.exception.DuplicateResourceException;
+import com.enigmacamp.Loan.Management.System.exception.ResourceNotFoundException;
 import com.enigmacamp.Loan.Management.System.repository.CustomerProfileRepository;
 import com.enigmacamp.Loan.Management.System.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.ResourceClosedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,12 +27,12 @@ public class CustomerProfileServiceImpl implements CustomerProfileService {
     public CustomerProfileResponse getMyProfile(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        () -> new ResourceClosedException("User not found")
                 );
 
         CustomerProfile profile = customerProfileRepository.findByUser(user)
                 .orElseThrow(
-                        () -> new RuntimeException("Customer profile not found")
+                        () -> new ResourceClosedException("Customer profile not found")
                 );
 
         return mapToResponse(profile);
@@ -39,17 +42,17 @@ public class CustomerProfileServiceImpl implements CustomerProfileService {
     public CustomerProfileResponse updateMyProfile(String username, CustomerProfileUpdateRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        () -> new ResourceClosedException("User not found")
                 );
 
         CustomerProfile profile = customerProfileRepository.findByUser(user)
                 .orElseThrow(
-                        () -> new RuntimeException("Customer profile not found")
+                        () -> new ResourceClosedException("Customer profile not found")
                 );
         // Validate email if changed
         if(!profile.getEmail().equals(request.email())){
             if(customerProfileRepository.existsByEmail(request.email())){
-                throw new RuntimeException("Email already exists");
+                throw new DuplicateResourceException("Email already exists");
             }
         }
 
@@ -75,7 +78,7 @@ public class CustomerProfileServiceImpl implements CustomerProfileService {
     public CustomerProfileResponse getProfileById(UUID id) {
         CustomerProfile profile = customerProfileRepository.findByUserId(id)
                 .orElseThrow(
-                        () -> new RuntimeException("Customer profile not found")
+                        () -> new ResourceNotFoundException("Customer profile not found")
                 );
         return mapToResponse(profile);
     }

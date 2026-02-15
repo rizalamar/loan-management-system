@@ -5,6 +5,7 @@ import com.enigmacamp.Loan.Management.System.dto.request.RegisterRequest;
 import com.enigmacamp.Loan.Management.System.dto.response.AuthResponse;
 import com.enigmacamp.Loan.Management.System.entities.CustomerProfile;
 import com.enigmacamp.Loan.Management.System.entities.User;
+import com.enigmacamp.Loan.Management.System.exception.DuplicateResourceException;
 import com.enigmacamp.Loan.Management.System.repository.CustomerProfileRepository;
 import com.enigmacamp.Loan.Management.System.repository.UserRepository;
 import com.enigmacamp.Loan.Management.System.security.JwtUtil;
@@ -33,12 +34,12 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse register(RegisterRequest request) {
         // 1. username validation
         if(userRepository.existsByUsername(request.username())){
-            throw new RuntimeException("Username already exists");
+            throw new DuplicateResourceException("Username already exists");
         }
 
         // 2. Email validation
         if(customerProfileRepository.existsByEmail(request.email())){
-            throw new RuntimeException("Email already exists");
+            throw new DuplicateResourceException("Email already exists");
         }
 
         // 3. Create User entity
