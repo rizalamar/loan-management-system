@@ -122,7 +122,7 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponse updateLoanStatus(UUID loanId, LoanStatusUpdateRequest request) {
         // 1. Find Loan
         Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new ResourceClosedException("Loan not found")]);
+                .orElseThrow(() -> new ResourceClosedException("Loan not found"));
 
         // 2. Business validation: tidak boleh update loan yang approved atau rejected
         if(loan.getStatus() != Loan.LoanStatus.PENDING){

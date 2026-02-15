@@ -6,6 +6,7 @@ import com.enigmacamp.Loan.Management.System.dto.response.AuthResponse;
 import com.enigmacamp.Loan.Management.System.entities.CustomerProfile;
 import com.enigmacamp.Loan.Management.System.entities.User;
 import com.enigmacamp.Loan.Management.System.exception.DuplicateResourceException;
+import com.enigmacamp.Loan.Management.System.exception.ResourceNotFoundException;
 import com.enigmacamp.Loan.Management.System.repository.CustomerProfileRepository;
 import com.enigmacamp.Loan.Management.System.repository.UserRepository;
 import com.enigmacamp.Loan.Management.System.security.JwtUtil;
@@ -60,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         // 6. save the customer
-        CustomerProfile savedCustomer = customerProfileRepository.save(customer);
+        customerProfileRepository.save(customer);
 
         // 7. Generate token
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getUsername());
@@ -88,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
         // Load user details
         User user = userRepository.findByUsername(request.username())
                 .orElseThrow(
-                        () -> new RuntimeException("User not found")
+                        () -> new ResourceNotFoundException("User not found")
                 );
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
 

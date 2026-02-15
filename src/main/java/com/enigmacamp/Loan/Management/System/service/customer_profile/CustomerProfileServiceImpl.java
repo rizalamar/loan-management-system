@@ -8,9 +8,12 @@ import com.enigmacamp.Loan.Management.System.exception.DuplicateResourceExceptio
 import com.enigmacamp.Loan.Management.System.exception.ResourceNotFoundException;
 import com.enigmacamp.Loan.Management.System.repository.CustomerProfileRepository;
 import com.enigmacamp.Loan.Management.System.repository.UserRepository;
+import com.enigmacamp.Loan.Management.System.service.file_storage.FileStorageService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.ResourceClosedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +25,7 @@ public class CustomerProfileServiceImpl implements CustomerProfileService {
 
     private final UserRepository userRepository;
     private final CustomerProfileRepository customerProfileRepository;
+    private final FileStorageService fileStorageService;
 
     @Override
     public CustomerProfileResponse getMyProfile(String username) {
@@ -63,6 +67,59 @@ public class CustomerProfileServiceImpl implements CustomerProfileService {
         CustomerProfile updated = customerProfileRepository.save(profile);
 
         return mapToResponse(updated);
+    }
+
+    @Override
+    @Transactional
+    public CustomerProfileResponse uploadKtp(String username, MultipartFile file) {
+        // 1. Find User
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // 2. Find Customer Profile
+        CustomerProfile profile = customerProfileRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer profile not found"));
+
+        // 3. Delete file if exists
+        if(profile.getKtpPath() != null ){
+            fileStorageService.deleteFile(profile.getKtpPath());
+        }
+
+        // 4. Store new file
+        String fileName = fileStorageService.storeFile(file, username, "ktp");
+
+        // 5. Update profile
+        profile.setKtpPath(fileName);
+        CustomerProfile updatedCustomer = customerProfileRepository.save(profile);
+
+        // 6. Return updatedCustomer
+        return mapToResponse(updatedCustomer);
+    }
+
+    @Override
+    public CustomerProfileResponse uploadSalarySlip(String username, MultipartFile file) {
+        // 1. Find User
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // 2. Find Customer Profile
+        CustomerProfile profile = customerProfileRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer profile not found"));
+
+        // 3. Delete file if exists
+        if(profile.getSalarySlipPath() != null){
+            fileStorageService.deleteFile(profile.getSalarySlipPath());
+        }
+
+        // 4. Store new file
+        String fileName = fileStorageService.storeFile(file, username, "salaryslip");
+
+        // 5. Update profile
+        profile.setSalarySlipPath(fileName);
+        CustomerProfile updatedCustomer = customerProfileRepository.save(profile);
+
+        // Return updatedCustomer
+        return mapToResponse(updatedCustomer);
     }
 
     // =============== Admin ================
