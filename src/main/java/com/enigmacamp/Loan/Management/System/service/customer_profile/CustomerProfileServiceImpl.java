@@ -62,6 +62,8 @@ public class CustomerProfileServiceImpl implements CustomerProfileService {
         return mapToResponse(updated);
     }
 
+    // =============== Admin ================
+
     @Override
     public List<CustomerProfileResponse> getAllProfiles() {
         return customerProfileRepository.findAll().stream()
@@ -92,6 +94,4 @@ public class CustomerProfileServiceImpl implements CustomerProfileService {
                 profile.getUpdateAt()
         );
     }
-
-
 }

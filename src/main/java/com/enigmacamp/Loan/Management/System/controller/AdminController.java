@@ -22,7 +22,7 @@ import java.util.UUID;
 public class AdminController {
     private final CustomerProfileService customerProfileService;
 
-    GetMapping("/customers")
+    @GetMapping("/customers")
     public ResponseEntity<CommonResponse<List<CustomerProfileResponse>>> getAllProfiles(){
         List<CustomerProfileResponse> responses = customerProfileService.getAllProfiles();
         return ResponseEntity.ok(
@@ -33,7 +33,7 @@ public class AdminController {
                         .build()
         );
     }
-    
+
     @GetMapping("/customers/{id}")
     public ResponseEntity<CommonResponse<CustomerProfileResponse>> getCustomerById(
             @PathVariable UUID id

@@ -91,6 +91,12 @@ public class AuthServiceImpl implements AuthService {
                 );
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
 
+        String token = jwtUtil.generateToken(userDetails);
 
+        return new AuthResponse(
+                token,
+                user.getUsername(),
+                user.getRole().name()
+        );
     }
 }

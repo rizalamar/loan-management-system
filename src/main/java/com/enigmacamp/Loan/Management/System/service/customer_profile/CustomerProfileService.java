@@ -11,5 +11,4 @@ public interface CustomerProfileService {
     CustomerProfileResponse updateMyProfile(String username, CustomerProfileUpdateRequest request);
     List<CustomerProfileResponse> getAllProfiles(); // Admin only
     CustomerProfileResponse getProfileById(UUID id); // Admin only
-
 }

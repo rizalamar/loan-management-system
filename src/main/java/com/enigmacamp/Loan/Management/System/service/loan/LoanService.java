@@ -16,7 +16,7 @@ public interface LoanService {
 
     // Admin operations
     List<LoanResponse> getAllLoans();
-    List<LoanResponse> getLoanByStatus(Loan.LoanStatus status);
+    List<LoanResponse> getLoansByStatus(Loan.LoanStatus status);
     LoanResponse updateLoanStatus(UUID loanId, LoanStatusUpdateRequest request);
     void deleteLoan(UUID loanId);
 }
